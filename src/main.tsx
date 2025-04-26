@@ -1,35 +1,35 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css' // global css
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css"; // global css
 // import App from './App.tsx'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import LoginPage from './views/login';
-import RegisterPage from './views/register';
-import ErrorPage from './views/404';
-import ProductPage from './views/products';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoginPage from "./views/login";
+import RegisterPage from "./views/register";
+import ErrorPage from "./views/404";
+import ProductPage from "./views/products";
 
 const routers = createBrowserRouter([
   {
     path: "/",
     element: <h1>Hello World!</h1>,
-    errorElement: <ErrorPage />
+    errorElement: <ErrorPage />,
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <RegisterPage />
+    element: <RegisterPage />,
   },
   {
     path: "/products",
-    element: <ProductPage />
-  }
+    element: <ProductPage />,
+  },
 ]);
 
-createRoot(document.querySelector('#root')!).render(
+createRoot(document.querySelector("#root")!).render(
   <StrictMode>
-    <RouterProvider router={routers}/>
+    <RouterProvider router={routers} />
   </StrictMode>,
 )

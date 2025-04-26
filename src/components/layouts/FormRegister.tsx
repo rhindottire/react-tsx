@@ -2,53 +2,29 @@ import Button from "../elements/button/Button";
 import Formel from "../fragments/Formel";
 
 type FormRegisterProps = {
-  action?: string;
-  method?: string;
-  children: string;
+  text: string;
 };
 
-const FormRegister: React.FC<FormRegisterProps> = ({
-  action = "",
-  method = "",
-  children,
-}) => {
+const FormRegister: React.FC<FormRegisterProps> = ({ text }) => {
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // const form = e.currentTarget;
+    // console.log((form.querySelector("#username") as HTMLInputElement)?.value);
+    // console.log((form.querySelector("#email") as HTMLInputElement)?.value);
+    // console.log((form.querySelector("#password") as HTMLInputElement)?.value);
+    // console.log("login 👻");
+  };
   return (
-    <form action={action} method={method}>
-      <Formel
-        htmlFor="username"
-        children="Username"
-        id="username"
-        name="username"
-        type="text"
-        placeholder="Input your Username"
-      />
-      <Formel
-        htmlFor="email"
-        children="Email"
-        id="email"
-        name="email"
-        type="text"
-        placeholder="example@domain.com"
-      />
+    <form onSubmit={handleRegister}>
+      <Formel id="email" type="text" placeholder="example@domain.com" />
+      <Formel id="username" type="text" placeholder="Input your Username" />
       <div className="flex gap-5">
-        <Formel
-          htmlFor="password"
-          children="Password"
-          id="password"
-          name="password"
-          type="password"
-          placeholder="********"
-        />
-        <Formel
-          htmlFor="confirmPassword"
-          children="Confirm Password"
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          placeholder="********"
-        />
+        <Formel id="password" type="password" placeholder="********" />
+        <Formel id="confirmPassword" type="password" placeholder="********" />
       </div>
-      <Button variant="bg-blue-500">{children}</Button>
+      <Button className="w-full" variant="bg-blue-500" type="submit">
+        {text}
+      </Button>
     </form>
   );
 };

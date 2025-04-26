@@ -1,30 +1,32 @@
-import React from "react";
-import Input from "../elements/input/Input";
+import { forwardRef } from "react";
+import { capitalize } from "../../lib/utils";
 import Label from "../elements/input/Label";
+import Input from "../elements/input/Input";
 
 type FormelProps = {
-  htmlFor: string;
-  children: React.ReactNode;
   id: string;
-  name: string;
   type: string;
   placeholder: string;
 };
 
-const Formel: React.FC<FormelProps> = ({
-  htmlFor,
-  children,
-  id,
-  name,
-  type,
-  placeholder,
-}) => {
-  return (
-    <div className="mb-6">
-      <Label htmlFor={htmlFor}>{children}</Label>
-      <Input id={id} name={name} type={type} placeholder={placeholder} />
-    </div>
-  );
-};
+const Formel = forwardRef<HTMLInputElement, FormelProps>(
+  ({ id, type, placeholder }, ref) => {
+    return (
+      <div className="mb-6">
+        <Label htmlFor={ id }>
+          {capitalize( id )}
+        </Label>
+        <Input
+          id={ id }
+          name={ id }
+          type={ type }
+          placeholder={ placeholder }
+          ref={ ref }
+        />
+      </div>
+    );
+  }
+);
+Formel.displayName = "Formel";
 
 export default Formel;

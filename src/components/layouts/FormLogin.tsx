@@ -1,40 +1,39 @@
+import { useEffect, useRef } from "react";
 import Button from "../elements/button/Button";
 import Formel from "../fragments/Formel";
 
 type FormLoginProps = {
-  action?: string;
-  method?: string;
-  children: string;
+  text: string;
 };
 
-const FormLogin: React.FC<FormLoginProps> = ({ action, method, children }) => {
+const FormLogin: React.FC<FormLoginProps> = ({ text }) => {
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    // console.log((form.querySelector("#email") as HTMLInputElement)?.value);
+    // console.log((form.querySelector("#username") as HTMLInputElement)?.value);
+    // console.log((form.querySelector("#password") as HTMLInputElement)?.value);
+    // console.log("login 👻");
+    localStorage.setItem( "email", (form.querySelector("#email") as HTMLInputElement)?.value);
+    localStorage.setItem( "username", (form.querySelector("#username") as HTMLInputElement)?.value);
+    localStorage.setItem( "password", (form.querySelector("#password") as HTMLInputElement)?.value);
+    window.location.href = "/products";
+  };
+
+  const emailRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
+
   return (
-    <form action={action} method={method}>
-      <Formel
-        htmlFor="username"
-        children="Username"
-        id="username"
-        name="username"
-        type="text"
-        placeholder="Type your Username"
-      />
-      <Formel
-        htmlFor="email"
-        children="Email"
-        id="email"
-        name="email"
-        type="text"
-        placeholder="example@domain.com"
-      />
-      <Formel
-        htmlFor="password"
-        children="Password"
-        id="password"
-        name="password"
-        type="text"
-        placeholder="********"
-      />
-      <Button variant="bg-blue-500">{children}</Button>
+    <form onSubmit={ handleLogin }>
+      <Formel id="email" type="text" placeholder="example@domain.com" ref={ emailRef } />
+      <Formel id="username" type="text" placeholder="Type your Username" />
+      <Formel id="password" type="password" placeholder="********" />
+      <Button className="w-full" variant="bg-blue-500" type="submit">
+        { text }
+      </Button>
     </form>
   );
 };
