@@ -1,36 +1,60 @@
 import { useEffect, useRef } from "react";
 import Button from "../elements/button/Button";
 import Formel from "../fragments/Formel";
+import { login } from "../../services/auth.service";
+import Swal from "sweetalert2";
+import { AxiosError } from "axios";
 
 type FormLoginProps = {
-  text: string;
-};
+  text: string
+}
+
+interface LoginFormFields extends HTMLFormControlsCollection {
+  email?: HTMLInputElement;
+  username?: HTMLInputElement;
+  password?: HTMLInputElement;
+}
 
 const FormLogin: React.FC<FormLoginProps> = ({ text }) => {
+  // const [loginFailed, setLoginFailed] = useState('');
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const form = e.currentTarget;
-    // console.log((form.querySelector("#email") as HTMLInputElement)?.value);
-    // console.log((form.querySelector("#username") as HTMLInputElement)?.value);
-    // console.log((form.querySelector("#password") as HTMLInputElement)?.value);
-    // console.log("login 👻");
-    localStorage.setItem( "email", (form.querySelector("#email") as HTMLInputElement)?.value);
-    localStorage.setItem( "username", (form.querySelector("#username") as HTMLInputElement)?.value);
-    localStorage.setItem( "password", (form.querySelector("#password") as HTMLInputElement)?.value);
-    window.location.href = "/products";
+    const elements = form.elements as LoginFormFields;
+
+    const data = {
+      email: elements.email?.value as string,
+      username: elements.username?.value as string,
+      password: elements.password?.value as string,
+    }
+
+    login(data, (status: boolean, res: string | Error) => {
+      if (status) {
+        localStorage.setItem("token", res as string);
+        window.location.href = "/products";
+      } else {
+        const error = res as AxiosError;
+        Swal.fire({
+          title: "Login Failed",
+          text: error.response?.data?.toString() || error.message,
+          icon: "error"
+        });
+      }
+    });
   };
 
-  const emailRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    emailRef.current?.focus();
+    usernameRef.current?.focus();
   }, []);
 
   return (
     <form onSubmit={ handleLogin }>
-      <Formel id="email" type="text" placeholder="example@domain.com" ref={ emailRef } />
-      <Formel id="username" type="text" placeholder="Type your Username" />
-      <Formel id="password" type="password" placeholder="********" />
+      <Formel id="email" type="email" placeholder="john@gmail.com" />
+      <Formel id="username" type="text" placeholder="johnd" ref={ usernameRef } />
+      <Formel id="password" type="password" placeholder="m38rmF$" />
       <Button className="w-full" variant="bg-blue-500" type="submit">
         { text }
       </Button>

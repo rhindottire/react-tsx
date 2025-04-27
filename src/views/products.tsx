@@ -1,17 +1,19 @@
 import Counter from "../components/layouts/Counter";
 import Button from "../components/elements/button/Button";
 import CardProduct from "../components/layouts/CardProduct";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { currency } from "../lib/utils";
+import { getProducts } from "../services/product.service";
+import { getUsername } from "../services/auth.service";
 
 interface Product {
   id: number;
-  name: string;
+  title: string;
   price: number;
-  href: string;
-  img: string;
-  alt: string;
-  link: string;
+  // href: string;
+  image: string;
+  // alt: string;
+  // link: string;
   description: string;
 }
 
@@ -20,56 +22,18 @@ interface CartItem {
   qty: number;
 }
 
-const products = [
-  {
-    id: 1,
-    href: "https://github.com/Mufid-031",
-    img: "/img/risqi.jpg",
-    alt: "Gyattzilla Images",
-    link: "#",
-    name: "Brand New Risqi",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatum distinctio, alias adipisci odio incidunt ad expedita sint tenetur error labore?",
-    price: 1000000,
-  },
-  {
-    id: 2,
-    href: "#",
-    img: "/img/keyboard.jpg",
-    alt: "Keyboard IMG",
-    link: "#",
-    name: "New Keyboard",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. At, adipisci?",
-    price: 500000,
-  },
-  {
-    id: 3,
-    href: "#",
-    img: "/img/sapu.jpg",
-    alt: "Sapu IMG",
-    link: "#",
-    name: "Arlot Sapu Jagat",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique autem, quibusdam tempora molestiae quam labore corrupti saepe reprehenderit, dignissimos omnis corporis, velit neque quia placeat cumque sit eligendi quas maxime nulla iste error voluptas? Dignissimos totam provident magnam minus architecto, neque laudantium. Impedit laudantium asperiores nobis!",
-    price: 6900000,
-  },
-];
-
-const user = localStorage.getItem("username");
-
 const ProductPage = () => {
-  // const [cart, setCart] = useState<{ name: string; qty: number }[]>([]);
-  // const [cart, setCart] = useState([{ id: 1, qty: 10 }]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [user, setUser] = useState("");
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
   }, []); // dependencies
 
   useEffect(() => {
-    if (cart.length > 0) {
+    if (products.length > 0 && cart.length > 0) {
       const sum = cart.reduce((acc, item) => {
         const product = products.find((product) => product.id === item.id);
         if (!product) return acc;
@@ -78,19 +42,35 @@ const ProductPage = () => {
       setTotalPrice(sum);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
-  },[cart]);
+  },[cart, products]);
 
-  const cartRef = useRef<CartItem[]>(JSON.parse(localStorage.getItem("cart") || "[]"));
-  const handleAddToCartRef = (id: number): void => {
-    cartRef.current = [...cartRef.current, { id, qty: 1 }];
-    localStorage.setItem("cart", JSON.stringify(cartRef.current));
-  };
-  const totalPriceRef = useRef<HTMLTableRowElement>(null);
   useEffect(() => {
-    if (totalPriceRef.current) {
-      totalPriceRef.current.style.display = cart.length > 0 ? "table-row" : "none";
+    const token = localStorage.getItem("token");
+    if (token) {
+      // console.log(token);
+      setUser(getUsername(token));
+    } else {
+      window.location.href = "/login";
     }
-  }, [cart]);
+  }, []);
+
+  useEffect(() => {
+    getProducts((data: Product[]) => {
+      setProducts(data);
+    });
+  }, []);
+
+  // const cartRef = useRef<CartItem[]>(JSON.parse(localStorage.getItem("cart") || "[]"));
+  // const handleAddToCartRef = (id: number): void => {
+  //   cartRef.current = [...cartRef.current, { id, qty: 1 }];
+  //   localStorage.setItem("cart", JSON.stringify(cartRef.current));
+  // };
+  // const totalPriceRef = useRef<HTMLTableRowElement>(null);
+  // useEffect(() => {
+  //   if (totalPriceRef.current) {
+  //     totalPriceRef.current.style.display = cart.length > 0 ? "table-row" : "none";
+  //   }
+  // }, [cart]);
 
   const handleAdd = (id: number) => {
     if(cart.find((item) => item.id === id )) {
@@ -104,9 +84,7 @@ const ProductPage = () => {
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    localStorage.removeItem("email");
-    localStorage.removeItem("username");
-    localStorage.removeItem("password");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
@@ -155,16 +133,14 @@ const ProductPage = () => {
     </div>
       <div className="flex justify-center text-white min-h-screen bg-neutral-900 overflow-x-hidden">
         <div className="flex flex-wrap w-3/4 p-5 gap-3">
-          {products.map(( product ) => (
+          {products.length > 0 && products.map(( product ) => (
             <CardProduct key={ product.id }>
               <CardProduct.Header
-                href={ product.href }
-                img={ product.img }
-                alt={ product.alt }
+                image={ product.image }
+                alt={ product.title }
               />
               <CardProduct.Body
-                link={ product.link }
-                name={ product.name }
+                title={ product.title }
                 description={ product.description }
               />
               <CardProduct.Footer
@@ -197,19 +173,19 @@ const ProductPage = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map( (item ) => {
+              {products.length > 0 && cart.map( (item ) => {
                 const product = products.find((p: Product) => p.id === item.id);
                 if (!product) return null;
                 return (
                   <tr key={ item.id }>
-                    <th>{ product.name }</th>
+                    <th>{ product.title.substring(0, 100) }</th>
                     <th>{ currency( product.price ) }</th>
                     <th>{ item.qty }</th>
                     <th>{ currency( item.qty * product.price ) }</th>
                   </tr>
                 )
               })}
-              <tr ref={ totalPriceRef }>
+              <tr>
                 <td colSpan={3}>
                   <strong>Total Price:</strong>
                 </td>
