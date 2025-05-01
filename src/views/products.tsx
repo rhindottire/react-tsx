@@ -4,16 +4,13 @@ import CardProduct from "../components/layouts/CardProduct";
 import { useEffect, useState } from "react";
 import { currency } from "../lib/utils";
 import { getProducts } from "../services/product.service";
-import { getUsername } from "../services/auth.service";
+import { useLogin } from "../hooks/useLogin"
 
 interface Product {
   id: number;
   title: string;
   price: number;
-  // href: string;
   image: string;
-  // alt: string;
-  // link: string;
   description: string;
 }
 
@@ -22,11 +19,11 @@ interface CartItem {
   qty: number;
 }
 
-const ProductPage = () => {
+const ProductsPage = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
-  const [user, setUser] = useState("");
+  const user = useLogin();
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
@@ -43,16 +40,6 @@ const ProductPage = () => {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   },[cart, products]);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // console.log(token);
-      setUser(getUsername(token));
-    } else {
-      window.location.href = "/login";
-    }
-  }, []);
 
   useEffect(() => {
     getProducts((data: Product[]) => {
@@ -201,4 +188,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default ProductsPage;

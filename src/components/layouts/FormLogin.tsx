@@ -52,8 +52,8 @@ const FormLogin: React.FC<FormLoginProps> = ({ text }) => {
 
   return (
     <form onSubmit={ handleLogin }>
-      <Formel id="email" type="email" placeholder="john@gmail.com" />
       <Formel id="username" type="text" placeholder="johnd" ref={ usernameRef } />
+      <Formel id="email" type="email" placeholder="john@gmail.com" />
       <Formel id="password" type="password" placeholder="m38rmF$" />
       <Button className="w-full" variant="bg-blue-500" type="submit">
         { text }

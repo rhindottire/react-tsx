@@ -6,7 +6,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./views/login";
 import RegisterPage from "./views/register";
 import ErrorPage from "./views/404";
-import ProductPage from "./views/products";
+import ProfilePage from "./views/profile";
+import ProductsPage from "./views/products";
+import ProductPage from "./views/product";
 
 const routers = createBrowserRouter([
   {
@@ -24,8 +26,16 @@ const routers = createBrowserRouter([
   },
   {
     path: "/products",
-    element: <ProductPage />,
+    element: <ProductsPage />,
   },
+  {
+    path: "/profile",
+    element: <ProfilePage />
+  },
+  {
+    path: "/product/:id", // dynamic routing
+    element: <ProductPage />
+  }
 ]);
 
 createRoot(document.querySelector("#root")!).render(

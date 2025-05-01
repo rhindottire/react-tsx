@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-interface Product {
+export interface Product {
   category: string;
   description: string;
   id: number;
@@ -24,5 +24,15 @@ export const getProducts = (callback: (data: Product[]) => void) => {
       } else {
         console.log("Unknown error occurred");
       }
+    });
+};
+
+export const getProduct = (id: number, callback: (data: Product) => void) => {
+  axios.get<Product>(`https://fakestoreapi.com/products/${id}`)
+    .then((res: AxiosResponse<Product>) => {
+      callback(res.data);
+    })
+    .catch((err: unknown) => {
+      console.error(`Error fetching product ${id}:`, err);
     });
 };
