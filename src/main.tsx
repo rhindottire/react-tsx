@@ -9,6 +9,8 @@ import ErrorPage from "./views/404";
 import ProfilePage from "./views/profile";
 import ProductsPage from "./views/products";
 import ProductPage from "./views/product";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 const routers = createBrowserRouter([
   {
@@ -40,6 +42,8 @@ const routers = createBrowserRouter([
 
 createRoot(document.querySelector("#root")!).render(
   <StrictMode>
-    <RouterProvider router={routers} />
+    <Provider store={ store } >
+      <RouterProvider router={ routers } />
+    </Provider>
   </StrictMode>,
 )

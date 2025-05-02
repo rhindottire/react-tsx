@@ -1,5 +1,7 @@
 import { currency } from "../../lib/utils";
 import Button from "../elements/button/Button";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/slices/cartSlice";
 
 type CardProductProps = {
   children: React.ReactNode;
@@ -43,16 +45,17 @@ const Body = ({ title, description }: {
   );
 };
 
-const Footer = ({ id, price, handleAdd }: {
+const Footer = ({ id, price }: {
   id: number;
   price: number;
-  handleAdd: (id:number) => void;
+  // handleAdd: (id: number) => void;
 }) => {
+  const disptach = useDispatch();
   return (
     <div className="flex justify-between items-center gap-3 p-3">
       <span className="text-xl font-bold">{currency( price )}</span>
       <Button variant="bg-blue-500"
-        onClick={() => handleAdd( id )}>
+        onClick={() => disptach(addToCart({ id, qty: 1 })) }>
           Add To Cart
       </Button>
     </div>
