@@ -11,6 +11,8 @@ import ProductsPage from "./views/products";
 import ProductPage from "./views/product";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import DarkModeProvider from "./contexts/DarkModeContextProvider";
+import { TotalPriceProvider } from "./contexts/TotalPriceContextProvider";
 
 const routers = createBrowserRouter([
   {
@@ -32,18 +34,22 @@ const routers = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <ProfilePage />
+    element: <ProfilePage />,
   },
   {
     path: "/product/:id", // dynamic routing
-    element: <ProductPage />
-  }
+    element: <ProductPage />,
+  },
 ]);
 
 createRoot(document.querySelector("#root")!).render(
   <StrictMode>
-    <Provider store={ store } >
-      <RouterProvider router={ routers } />
-    </Provider>
-  </StrictMode>,
-)
+    <DarkModeProvider>
+      <Provider store={ store }>
+        <TotalPriceProvider>
+          <RouterProvider router={ routers } />
+        </TotalPriceProvider>
+      </Provider>
+    </DarkModeProvider>
+  </StrictMode>
+);

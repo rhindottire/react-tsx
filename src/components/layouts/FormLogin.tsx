@@ -1,48 +1,77 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../elements/button/Button";
 import Formel from "../fragments/Formel";
 import { login } from "../../services/auth.service";
 import Swal from "sweetalert2";
 import { AxiosError } from "axios";
+import { Loader2 } from 'lucide-react';
 
 type FormLoginProps = {
-  text: string
-}
+  text: string;
+};
 
-interface LoginFormFields extends HTMLFormControlsCollection {
-  email?: HTMLInputElement;
-  username?: HTMLInputElement;
-  password?: HTMLInputElement;
-}
+// interface LoginFormFields extends HTMLFormControlsCollection {
+//   email?: HTMLInputElement;
+//   username?: HTMLInputElement;
+//   password?: HTMLInputElement;
+// }
 
 const FormLogin: React.FC<FormLoginProps> = ({ text }) => {
-  // const [loginFailed, setLoginFailed] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formValues, setFormValues] = useState({
+    username: "",
+    email: "",
+    password: ""
+  });
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormValues(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const form = e.currentTarget;
-    const elements = form.elements as LoginFormFields;
+    try {
+      const data = {
+        email: formValues.email,
+        username: formValues.username,
+        password: formValues.password,
+      };
 
-    const data = {
-      email: elements.email?.value as string,
-      username: elements.username?.value as string,
-      password: elements.password?.value as string,
+      login(data, (status: boolean, res: string | Error) => {
+        setIsLoading(false);
+
+        if (status) {
+          localStorage.setItem("token", res as string);
+          Swal.fire({
+            title: "Success!",
+            text: "You have successfully logged in",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/products";
+          });
+        } else {
+          const error = res as AxiosError;
+          Swal.fire({
+            title: "Login Failed",
+            text: error.response?.data?.toString() || error.message,
+            icon: "error"
+          });
+        }
+
+      });
+    } catch (error) {
+      setIsLoading(false);
+      Swal.fire({
+        title: "Error",
+        text: "An unexpected error occurred: " + error,
+        icon: "error"
+      });
     }
-
-    login(data, (status: boolean, res: string | Error) => {
-      if (status) {
-        localStorage.setItem("token", res as string);
-        window.location.href = "/products";
-      } else {
-        const error = res as AxiosError;
-        Swal.fire({
-          title: "Login Failed",
-          text: error.response?.data?.toString() || error.message,
-          icon: "error"
-        });
-      }
-    });
   };
 
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -51,12 +80,46 @@ const FormLogin: React.FC<FormLoginProps> = ({ text }) => {
   }, []);
 
   return (
-    <form onSubmit={ handleLogin }>
-      <Formel id="username" type="text" placeholder="johnd" ref={ usernameRef } />
-      <Formel id="email" type="email" placeholder="john@gmail.com" />
-      <Formel id="password" type="password" placeholder="m38rmF$" />
-      <Button className="w-full" variant="bg-blue-500" type="submit">
-        { text }
+    <form onSubmit={handleLogin} className="space-y-4">
+      <Formel
+        id="username"
+        type="text"
+        placeholder="johnd"
+        ref={usernameRef}
+        value={formValues.username}
+        onChange={handleChange}
+      />
+
+      <Formel
+        id="email"
+        type="email"
+        placeholder="john@gmail.com"
+        value={formValues.email}
+        onChange={handleChange}
+      />
+
+      <Formel
+        id="password"
+        type="password"
+        placeholder="m38rmF$"
+        value={formValues.password}
+        onChange={handleChange}
+      />
+
+      <Button
+        className="w-full mt-6"
+        variant="primary"
+        type="submit"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+            Processing...
+          </>
+        ) : (
+          text
+        )}
       </Button>
     </form>
   );

@@ -2,6 +2,8 @@ import Button from "../elements/button/Button";
 import { useLogin } from "../../hooks/useLogin";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { currency } from "../../lib/utils";
+import { useTotalPrice } from "../../hooks/useTotalPrice";
 
 interface CartItem {
   id: number;
@@ -12,6 +14,7 @@ export default function NavbarTemplate() {
   const user = useLogin();
   const [totalCart, setTotalCart] = useState<number>(0);
   const cart = useSelector((state: { cart: { data: CartItem[] } }) => state.cart.data);
+  const { total } = useTotalPrice();
 
   useEffect(() => {
     const sum = cart.reduce((acc: number, item: CartItem) => {
@@ -67,7 +70,7 @@ export default function NavbarTemplate() {
         </Button>
 
         <div className="flex items-center py-2 px-4 rounded-md ml-5 bg-white">
-          { totalCart }
+          { totalCart } Items | { currency(total) }
         </div>
       </div>
     </nav>

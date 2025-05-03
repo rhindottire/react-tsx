@@ -1,6 +1,7 @@
+import { useTotalPrice, useTotalPriceDispatch } from "../../hooks/useTotalPrice";
 import { currency } from "../../lib/utils";
 import { Product } from "../../services/product.service";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 interface CartItem {
@@ -14,7 +15,8 @@ interface TableCartProps {
 
 export default function TableCart({ products }: TableCartProps) {
   const cart = useSelector((state: { cart: { data: CartItem[] } }) => state.cart.data);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const dispatch = useTotalPriceDispatch();
+  const { total } = useTotalPrice();
 
   useEffect(() => {
     if (products.length > 0 && cart.length > 0) {
@@ -23,10 +25,15 @@ export default function TableCart({ products }: TableCartProps) {
         if (!product) return acc;
         return acc + product.price * item.qty;
       }, 0);
-      setTotalPrice(sum);
+      dispatch({
+        type: "UPDATE",
+        payload: {
+          total: sum,
+        }
+      });
       localStorage.setItem("cart", JSON.stringify(cart));
     }
-  },[cart, products]);
+  },[cart, products, dispatch]);
 
   const totalPriceRef = useRef<HTMLTableRowElement>(null);
   useEffect(() => {
@@ -63,7 +70,7 @@ export default function TableCart({ products }: TableCartProps) {
             <strong>Total Price:</strong>
           </td>
           <td>
-            <b>{ currency(totalPrice) }</b>
+            <b>{ currency(total) }</b>
           </td>
         </tr>
       </tbody>

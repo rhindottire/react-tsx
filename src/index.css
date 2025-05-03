@@ -29,6 +29,18 @@
   --card-foreground: 222.2 47.4% 11.2%;
 
   --radius: 0.5rem;
+
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
 }
 
 /* Contoh Custom Classes pakai theme() */
@@ -140,6 +152,21 @@
   }
 }
 
+@keyframes slideUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -179,4 +206,38 @@
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout shift during dark mode transition */
+html, body {
+  min-height: 100vh; /* Equivalent to Tailwind's min-h-screen */
+}
+
+/* Optional: this is a visual enhancement, not functional logic */
+body {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 300ms;
+}
+
+/* Focus-visible enhancements */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-500), 0 0 0 4px white;
+  /* Adjust theme() manually or define colors directly if needed */
+}
+
+/* Dark mode transition (for all children of .dark) */
+.dark * {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 300ms;
+}
+
+/* Form animations */
+input, button {
+  transition: all 0.2s;
 }
