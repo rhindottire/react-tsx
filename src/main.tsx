@@ -13,11 +13,12 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import DarkModeProvider from "./contexts/DarkModeContextProvider";
 import { TotalPriceProvider } from "./contexts/TotalPriceContextProvider";
+import Root from "./views/root";
 
 const routers = createBrowserRouter([
   {
     path: "/",
-    element: <h1>Hello World!</h1>,
+    element: <Root />,
     errorElement: <ErrorPage />,
   },
   {
@@ -42,7 +43,9 @@ const routers = createBrowserRouter([
   },
 ]);
 
-createRoot(document.querySelector("#root")!).render(
+createRoot(document.querySelector("#root")!,{
+  identifierPrefix: "react-tsx"
+}).render(
   <StrictMode>
     <DarkModeProvider>
       <Provider store={ store }>
